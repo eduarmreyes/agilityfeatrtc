@@ -122,7 +122,7 @@ app.get("/:rid", function(req, res) {
 		if (req.format === "json") {
 			res.json(data);
 		} else{
-			res.sender("room", data);
+			res.render("room", data);
 		}
 	};
 
