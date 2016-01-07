@@ -1,0 +1,14 @@
+{
+	"name": "AgilityFeatRTC",
+	"description": "AgilityFeatRTC is a WebRTC Demo created to get a job propossal onto AgilityFeat, it supports video chat, audio/video and file sharing through WebRTC and OpenTok",
+	"repository": "https://github.com/eduarmreyes/agilityfeatrtc.git",
+	"keywords": ["webrtc", "opentok", "video", "video chat", "file sharing", "nodejs", "node.js"],
+	"env" {
+		"TB_KEY": {
+			"description": "45458482"
+		},
+		"TB_SECRET": {
+			"description": "4c0d3f2bbea171c83d481153e584fa14b930c6f8"
+		}
+	}
+}
