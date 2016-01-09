@@ -29,9 +29,23 @@
         </a>
         <div class="navbar-custom-menu">
 	        <ul class="nav navbar-nav">
+		        <!-- Notifications: style can be found in dropdown.less -->
+		        <li class="dropdown notifications-menu">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+		            <i class="fa fa-bell-o"></i>
+		          </a>
+		          <ul class="dropdown-menu">
+		            <li class="header">New users list</li>
+		            <li>
+		              <!-- inner menu: contains the actual data -->
+		              <ul class="menu">
+		              </ul>
+		            </li>
+		          </ul>
+		        </li>
 		        <li>
 	            <a href="#" data-toggle="control-sidebar"><i class="fa fa-upload"></i></a>
-	          </li>	        	
+	          </li>
 					</ul>
         </div>
       </nav>
@@ -201,6 +215,20 @@
       <div id="{{id}}"></div>
       <div class="flagUser" data-streamconnection="{{id}}">Remove User</div>
     </div>
+  </script>
+  <script id="chattrNewUserTpl" type="text/x-handlebars-template">
+	  <li>
+	    <a href="#">
+	      <i class="fa fa-users text-aqua"></i> {{nickname}} has joined the room
+	    </a>
+	  </li>
+  </script>
+  <script id="chattrUserLeaveTpl" type="text/x-handlebars-template">
+	  <li>
+	    <a href="#">
+	      <i class="fa fa-users text-red"></i> {{nickname}} has left the room
+	    </a>
+	  </li>
   </script>
   <% include _vendor %>
 	<script src="//static.opentok.com/v2.2/js/opentok.min.js"></script>

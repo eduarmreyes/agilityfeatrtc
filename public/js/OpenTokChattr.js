@@ -30,8 +30,8 @@ OpenTokChattr.prototype = {
     // _this.templates.base = $('#chattrBaseTpl').html();
     // _this.templates.chat = $('#chattrChatTpl').html();
     // _this.templates.status = $('#chattrStatusTpl').html();
-    // _this.templates.newUser = $('#chattrNewUserTpl').html();
-    // _this.templates.userLeave = $('#chattrUserLeaveTpl').html();
+    _this.templates.newUser = $('#chattrNewUserTpl').html();
+    _this.templates.userLeave = $('#chattrUserLeaveTpl').html();
     // _this.templates.update = $('#chattrUpdateTpl').html();
     // _this.templates.userList = $('#chattrUserListTpl').html();
     // _this.templates.help = $('#chattrHelpTpl').html();
@@ -171,13 +171,13 @@ OpenTokChattr.prototype = {
       case "newUser":
         if(!_this.isMe(data.from)||!data){
           tmplData.nickname = _this.getNickname(data);
-          _this.appendToMessages('newUser', tmplData);
+          _this.appendToNotifications('newUser', tmplData);
         }
         break;
       case "userLeave":
         if(!_this.isMe(data.from)||!data.from){
           tmplData.nickname = _this.getNickname(data.from);
-          _this.appendToMessages('userLeave', tmplData);
+          _this.appendToNotifications('userLeave', tmplData);
         }
         break;
       case "generalUpdate":
@@ -206,6 +206,11 @@ OpenTokChattr.prototype = {
   appendToMessages: function(template, data){
     // var tpl = Handlebars.compile(_this.templates[template]);
     // $("#chattr .inner-chat ul#messages").append(tpl(data));
+  },
+  appendToNotifications: function(template, data) {
+    var tpl = Handlebars.compile(_this.templates[template]);
+    $("ul.dropdown-menu>li>ul.menu").append(tpl(data));
+    _this.updateNotificationMenu();
   },
   checkKeyPress: function(e){
     var code = (e.keyCode ? e.keyCode : e.which);
@@ -301,6 +306,12 @@ OpenTokChattr.prototype = {
   },
   isMe: function(connectionId){
     return connectionId===_this.session.connection.connectionId;
+  },
+  updateNotificationMenu: function() {
+    var iNotifications = $("ul.dropdown-menu>li>ul.menu>li").length,
+      sNotificationNumber = "<i class='fa fa-bell-o'></i><span class='label label-warning'>" + iNotifications + "</span>";
+    $(".notifications-menu>.dropdown-toggle").empty();
+    $(".notifications-menu>.dropdown-toggle").html(sNotificationNumber);
   },
 
   //Helper Methods
