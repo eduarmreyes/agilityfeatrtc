@@ -93,14 +93,10 @@
 	                  <label for="exampleInputFile">File input</label>
 	                  <input type="file" id="exampleInputFile">
 
-	                  <p class="help-block">Example block-level help text here.</p>
+	                  <p class="help-block">You just need to select your file and it will inmediatly shared with people online.</p>
 	                </div>
 	              </div>
 	              <!-- /.box-body -->
-
-	              <div class="box-footer">
-	                <button type="submit" class="btn btn-primary">Submit</button>
-	              </div>
 	            </form>
             </li>
           </ul><!-- /.control-sidebar-menu -->
@@ -232,6 +228,7 @@
   </script>
   <% include _vendor %>
 	<script src="//static.opentok.com/v2.2/js/opentok.min.js"></script>
+	<script src="//cdn.webrtc-experiment.com/DataChannel.js"></script>
 	<script src="/vendors/handlebars.js" type="text/javascript"></script>
 	<script src="/js/layoutContainer.js" type="text/javascript"></script>
 	<script src="/vendors/jquery.event.ue.js" type="text/javascript"></script>
@@ -253,6 +250,16 @@
 	  }
 	 });
 	  room = new Room("<%= rid %>", session, "<%= token %>", chattr);
+	  dataChannel = new DataChannel("<%= rid %>");
+    var arrayToStoreChunks = [];
+	  dataChannel.onmessage = function (event) {
+	    arrayToStoreChunks.push(event.message); // pushing chunks in array
+
+	    if (event.last) {
+	      saveToDisk(arrayToStoreChunks.join(''), 'fake filename');
+	      arrayToStoreChunks = []; // resetting array
+	    }
+	  };
 	  var startX = $(window).width()-10-$("#chattr").width();
 	  var startY = $(window).height()-56-$("#chattr").height();
 	  $('#filtersButton').popover();

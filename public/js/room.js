@@ -3,6 +3,7 @@ function Room(roomId, session, token, chattr){
   this.session = session;
   this.token = token;
   this.chattr = chattr;
+  this.iChunkLength = 1000;
   this.filterData = {};
   this.subscribers = {};
   this.myStream = undefined;
@@ -53,6 +54,26 @@ Room.prototype = {
       $(this).addClass("selected");
       self.sendSignal( "filter", {cid: self.session.connection.connectionId, filter: prop });
       self.filterData[self.session.connection.connectionId] = prop;
+    });
+    $("input[type=file]").on("change", function() {
+      var file = this.files[0];
+      /*
+        Description:
+        The FileReader object lets web applications asynchronously read the contents of files (or raw data buffers) stored on the user's computer, using File or Blob objects to specify the file or data to read.
+      
+        Syntax:
+        var FileReader = FileReader();
+      */
+      var reader = new window.FileReader();
+      /*
+        Description:
+        The readAsDataURL method is used to starts reading the contents of the specified Blob or File. When the read operation is finished, the readyState becomes DONE, and the loadend is triggered. At that time, the result attribute contains a data: URL representing the file's data as base64 encoded string.
+      
+        Syntax:
+        instanceOfFileReader.readAsDataURL(blob);
+      */
+      reader.readAsDataURL(file);
+      reader.onload = onReadAsDataURL;
     });
   },
   initOT: function(){
@@ -307,4 +328,32 @@ var findConnectionIdFromElement = function(el) {
   }
   return undefined;
 };
+var onReadAsDataURL = function(event, text) {
+  var data = {};
+  if (event) text = event.target.result;
+  if (text.length > self.iChunkLength) {
+    data.message = text.slice(0, self.iChunkLength);
+  } else{
+    data.message = text;
+    data.last = true;
+  }
+  dataChannel.send(data);
+  var remainingDataURL = text.slice(data.message.length);
+  if (typeof remainingDataURL !== "undefined" && remainingDataURL.length) {
+    setTimeout(function() {
+      // onReadAsDataURL(null, remainingDataURL);
+    }, 500);
+  }
+};
+var saveToDisk = function(fileUrl, fileName) {
+  var save = document.createElement('a');
+  save.href = fileUrl;
+  save.target = '_blank';
+  save.download = fileName || fileUrl;
 
+  var event = document.createEvent('Event');
+  event.initEvent('click', true, true);
+
+  save.dispatchEvent(event);
+  (window.URL || window.webkitURL).revokeObjectURL(save.href);
+};
