@@ -254,10 +254,10 @@
     var arrayToStoreChunks = [];
 	  dataChannel.onmessage = function (event) {
 	    arrayToStoreChunks.push(event.message); // pushing chunks in array
-
-	    if (event.last) {
-	      saveToDisk(arrayToStoreChunks.join(''), 'fake filename');
-	      arrayToStoreChunks = []; // resetting array
+	    var oDate = new Date(), sDate = oDate.getMonth()+1 + "-" + oDate.getDate() + "-" + oDate.getFullYear();
+    	if (event.last) {
+    	  saveToDisk(arrayToStoreChunks.join(''), "AgilityFeatRTC - Shared File " + sDate);
+  	    arrayToStoreChunks = []; // resetting array
 	    }
 	  };
 	  var startX = $(window).width()-10-$("#chattr").width();
