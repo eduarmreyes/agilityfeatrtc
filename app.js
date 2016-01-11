@@ -46,68 +46,6 @@ app.get("/", function(req, res) {
 });
 
 // ***
-// *** Post endpoint to start/stop archives
-// ***
-app.post("/archive/:sessionId", function(req, res, next) {
-	// final function to be called when all the necessary data is gathered
-	function sendArchiveResponse (error, archive) {
-		if (error) {
-			var payload;
-			if (config.web.env === "development") {
-				payload = { error: error.message };
-			} else {
-				payload = { error: "An error occurred, could not " + req.body.action + " the archive" };
-			}
-			return res.json(500, payload);
-		}
-		res.json(archive);
-	}
-
-	// When an archive is given through a reservation
-	if (req.archiveInfo) {
-		sendArchiveResponse(req.archiveInfo.error, req.archiveInfo.archive);
-		return;
-	}
-
-	// When an archive needs to be created or stopped
-	if (req.body.action === "start") {
-		ot.startArchive(req.params.sessionId, {name: req.body.roomId}, sendArchiveResponse);
-	} else{
-		ot.stopArchive(req.body.archiveId, sendArchiveResponse);
-	}
-});
-
-// ***
-// *** Renders archive page
-// ***
-app.get("/archive/:archiveId/:roomId", function(req, res, next) {
-	// final function to be called when all the necessary data is gathered
-	function sendArchiveResponse (error, archive) {
-		if (error) {
-			var payload;
-			if (config.web.env === "development") {
-				payload = { error: error.message };
-			} else {
-				payload = { error: "An error occurred, could not get the archive" };
-			}
-			payload.archive = false;
-			console.log(payload);
-			return res.json(500, payload);
-		}
-		return res.sender("archive", {error: false, archive: archive})
-	}
-
-	// When an archive is given throught a reservation
-	if (req.archiveInfo) {
-		sendArchiveResponse( req.archiveInfo.error, req.archiveInfo.archive);
-		return;
-	}
-
-	// When an archive needs to be created or stopped
-	ot.getArchive(req.params.archiveId, sendArchiveResponse);
-});
-
-// ***
 // *** When user goes to a room, render the room page
 // ***
 app.get("/:rid", function(req, res) {
