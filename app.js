@@ -6,8 +6,6 @@ var express			 	= require("express"),
 	bodyParser			= require("body-parser"),
 	cors						= require("cors"),
 	actors 					= require("simple-actors"),
-	Rx 							= require('rx'),
-	RxNode 					= require('rx-node'),
 	config 					= require("./config"),
 	storage 				= require("./lib/store.js"),
 	loadMiddleware	= require("./lib/load-middleware.js");
@@ -100,25 +98,6 @@ app.get("/:rid", function(req, res) {
 		});
 	}
 });
-
-// ***
-// *** Reactive Extension
-// ***
-var source = Rx.Observable.return(42);
-
-var emitter = RxNode.toEventEmitter(source, 'data');
-
-emitter.on('data', function (data) {
-    console.log('Data: ' + data);
-});
-
-emitter.on('end', function () {
-    console.log('End');
-});
-
-// Ensure to call publish to fire events from the observable
-emitter.publish();
-
 
 // ***
 // *** start server, listen to port (predefined or 9393)
