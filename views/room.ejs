@@ -101,6 +101,53 @@
             </li>
           </ul><!-- /.control-sidebar-menu -->
 
+          <div class="col-md-3">
+            <!-- DIRECT CHAT SUCCESS -->
+            <div class="box box-success direct-chat direct-chat-success">
+              <div class="box-header with-border">
+                <h3 class="box-title">Chat</h3>
+                <p class="help-block">Chat made with Reactive Extensions and Actors Design Pattern</p>
+                <div class="box-tools pull-right">
+                  <span data-toggle="tooltip" title="3 Messages" class="badge bg-green">3</span>
+                </div>
+              </div><!-- /.box-header -->
+              <div class="box-body">
+                <!-- Conversations are loaded here -->
+                <div class="direct-chat-messages">
+                  <!-- Message. Default to the left -->
+                  <div class="direct-chat-msg">
+                    <!-- /.direct-chat-info -->
+                    <!-- /.direct-chat-img -->
+                    <div class="direct-chat-text">
+                      Is this template really for free? That's unbelievable!
+                    </div><!-- /.direct-chat-text -->
+                  </div><!-- /.direct-chat-msg -->
+
+                  <!-- Message to the right -->
+                  <div class="direct-chat-msg right">
+                    <!-- /.direct-chat-info -->
+                    <!-- /.direct-chat-img -->
+                    <div class="direct-chat-text">
+                      You better believe it!
+                    </div><!-- /.direct-chat-text -->
+                  </div><!-- /.direct-chat-msg -->
+                </div><!--/.direct-chat-messages-->
+
+              </div><!-- /.box-body -->
+              <div class="box-footer">
+                <form action="#" method="post">
+                  <div class="input-group">
+                    <input id="chat_message" type="text" name="message" placeholder="Type Message ..." class="form-control">
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-success btn-flat">Send</button>
+                    </span>
+                  </div>
+                </form>
+              </div><!-- /.box-footer-->
+            </div>
+          </div><!-- /.col -->
+
+
           <h3 class="control-sidebar-heading">Tasks Progress</h3>
           <ul class="control-sidebar-menu">
             <li>
@@ -143,7 +190,7 @@
         <!-- Settings tab content -->
         <div class="tab-pane" id="control-sidebar-settings-tab">
           <form method="post">
-            <h3 class="control-sidebar-heading">General Settings</h3>
+            <h3 class="control-sidebar-heading">Chat</h3>
             <div class="form-group">
               <label class="control-sidebar-subheading">
                 Report panel usage
@@ -234,6 +281,8 @@
 	<script src="/vendors/jquery.event.ue.js" type="text/javascript"></script>
 	<script src="/vendors/jquery.udraggable.js" type="text/javascript"></script>
 	<script src="/vendors/ZeroClipboard/ZeroClipboard.min.js" type="text/javascript"></script>
+	<script src="/vendors/rx/dist/rx.all.js" type="text/javascript"></script>
+	<script src="/vendors/rx-jquery/rx.jquery.js" type="text/javascript"></script>
 	<script src="/js/OpenTokChattr.js" type="text/javascript"></script>
 	<script src="/js/room.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -299,6 +348,43 @@
 	  $(".controlOption").click(function(){
 	    $(this).toggleClass("selected");
 	  });
+	  // ***
+	  // *** Reactive jsQuery Bindings for the Reactive Extensions for Javascript
+	  // ***
+	  var throttledInput = $('#chat_message')
+	  		.keyupAsObservable()
+	  		.map(function(e){
+	  			console.log(e.target);
+	  			return $(e.target).val();
+	  		})
+	  		.throttle(500)
+	  		.distinctUntilChanged();
+		var suggestions = throttledInput.flatMapLatest( function (text) {
+		        return searchWikipedia(text);
+		});
+		var subscription = suggestions.subscribe( 
+		    function (data) {
+		        $.each(data[1], function (_, text) {
+		        	console.log(text);
+		        });
+		    }, 
+		    function (e) {
+		    	console.log(e);
+		    }
+		);
+
+
+		function searchWikipedia(term) {
+		    return $.ajaxAsObservable({
+	        url: "http://en.wikipedia.org/w/api.php",
+	        data: {
+        		action: 'opensearch',
+            search: term,
+            format: 'json'
+        	},
+	        dataType: 'json'
+		    });
+		}
 	</script>
 </body>
 </html>

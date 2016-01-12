@@ -318,7 +318,27 @@ OpenTokChattr.prototype = {
 
   _timeDifference: function(d1,d2){
     var seconds = (d2.getTime()-d1.getTime())/1000;
-    if(seconds>=60 && seconds<120)
+    switch(seconds){
+      case seconds>=60 && seconds<120:
+        return "1 minute ago";
+        break;
+      case seconds>=120 && seconds<3600:
+        return parseInt(seconds/60,10)+" minutes ago";
+        break;
+      case seconds>=3600 && seconds<7200:
+        return "1 hours ago";
+        break;
+      case seconds>=7200:
+        return parseInt(seconds/3600,10)+" hours ago";
+        break;
+      case seconds>=10:
+        return parseInt(seconds/60,10)+" seconds ago";
+        break;
+      default:
+        return "Just now";
+        break;
+    }
+    /*if(seconds>=60 && seconds<120)
       return "1 minute ago";
     else if(seconds>=120 && seconds<3600)
       return parseInt(seconds/60,10)+" minutes ago";
@@ -329,9 +349,9 @@ OpenTokChattr.prototype = {
     else if (seconds>=10)
       return parseInt(seconds/60,10)+" seconds ago";
     else
-      return "Just now";
+      return "Just now";*/
   },
   _defaultNickname: function(connectionId){
-    return "Guest-"+connectionId.substring( connectionId.length - 8, connectionId.length )
+    return "AgilityFeat Guest-"+connectionId.substring( connectionId.length - 8, connectionId.length )
   }
 }
