@@ -10,9 +10,21 @@ function OpenTokChattr(targetElem, roomId,session, options){
   this.initOpenTok();
   this.templates = {};
   this.initChattrTemplates();
+  $("form").on("submit", function(e) {
+    e.preventDefault();
+  });
   // this.targetElem.append(Handlebars.compile(this.templates.base));
-  this.targetElem.find("#chattr #roomId").html(this.roomId); 
-  $("#chatInput").keyup(_this.checkKeyPress);
+  this.targetElem.find("#chattr #roomId").html(this.roomId);
+  var chatInput = document.querySelector("#chat_message");
+  var chatInputStream = Rx.Observable.fromEvent(chatInput, "keyup");
+  chatInputStream.filter(function(e) {
+    var code = (e.keyCode ? e.keyCode : e.which);
+    return code !== 13;
+  });
+  chatInputStream.subscribe(function(e) {
+    _this.checkKeyPress(e);
+  });
+  // $("#chatInput").keyup(_this.checkKeyPress);
   // this.uiActions();
   // Every 10 seconds update the times for everyone
   setInterval(function () {
@@ -22,13 +34,29 @@ function OpenTokChattr(targetElem, roomId,session, options){
       $(this).attr('title',timeDiff);
     });
   }, 10000);
+  // ***
+  // *** Reactive Extensions for Javascript
+  // *** Purpose: handle chat
+  // ***
+  var chatButton = document.querySelector(".btn.btn-success.btn-flat");
+  var chatButtonClickStream = Rx.Observable.fromEvent(chatButton, "click");
+  var chatButtonOnComplete = chatButtonClickStream.subscribeOnCompleted(function(e) {
+    $("#chat_message").val("");
+  });
+  chatButtonClickStream.subscribe(function() {
+    sendChat($("#chat_message").val());
+  });
+  function sendChat (sMessage) {
+    _this.sendChat(sMessage);
+  }
+
 }
 OpenTokChattr.prototype = {
   _this:this,
   constructor: OpenTokChattr,
   initChattrTemplates: function(){
     // _this.templates.base = $('#chattrBaseTpl').html();
-    // _this.templates.chat = $('#chattrChatTpl').html();
+    _this.templates.chat = $('#chattrChatTpl').html();
     // _this.templates.status = $('#chattrStatusTpl').html();
     _this.templates.newUser = $('#chattrNewUserTpl').html();
     _this.templates.userLeave = $('#chattrUserLeaveTpl').html();
@@ -160,7 +188,7 @@ OpenTokChattr.prototype = {
         tmplData.time = this._timeDifference(new Date(data.date),new Date());
         tmplData.nickname=data.name+": ";
         tmplData.message=decodeURI(data.text).replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        tmplData.cls = _this.isMe(data.from)?"from-me":"from-others";
+        tmplData.cls = _this.isMe(data.from)?" right":"";
         _this.appendToMessages('chat', tmplData);
         break;
       case "status":
@@ -201,11 +229,11 @@ OpenTokChattr.prototype = {
         break;
     }
     $("#messages").append(html);
-    // $(".inner-chat").scrollTop($(".inner-chat")[0].scrollHeight)
+    $(".direct-chat-messages").scrollTop($(".direct-chat-messages")[0].scrollHeight)
   },
   appendToMessages: function(template, data){
-    // var tpl = Handlebars.compile(_this.templates[template]);
-    // $("#chattr .inner-chat ul#messages").append(tpl(data));
+    var tpl = Handlebars.compile(_this.templates[template]);
+    $(".direct-chat-messages").append(tpl(data));
   },
   appendToNotifications: function(template, data) {
     var tpl = Handlebars.compile(_this.templates[template]);
@@ -217,7 +245,7 @@ OpenTokChattr.prototype = {
     if(code !== 13) {
      return;
     } 
-    var text = $.trim($("#chatInput").val());
+    var text = $.trim($("#chat_message").val());
     if(text.length===0)
        return;
     var parts = text.split(" ");
@@ -241,7 +269,7 @@ OpenTokChattr.prototype = {
       default:
         _this.sendChat(text);
     }
-    $("#chatInput").val("");
+    $("#chat_message").val("");
   },
   sendHelpSignal: function(){
     _this.sendSelfUpdate(_this.templates.help, "help");

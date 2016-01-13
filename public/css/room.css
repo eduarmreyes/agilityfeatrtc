@@ -227,8 +227,8 @@ h1, h2, h3, h4, h5, h6, p {
 .tooltip {
   font-family: 'Muli', sans-serif; }
 
-  body * {
-    box-sizing: content-box; }
+  /*body * {
+    box-sizing: content-box; }*/
   body .container {
     position: fixed;
     top: 0;

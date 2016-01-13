@@ -101,7 +101,7 @@
             </li>
           </ul><!-- /.control-sidebar-menu -->
 
-          <div class="col-md-3">
+          <div class="col-md-12">
             <!-- DIRECT CHAT SUCCESS -->
             <div class="box box-success direct-chat direct-chat-success">
               <div class="box-header with-border">
@@ -114,23 +114,6 @@
               <div class="box-body">
                 <!-- Conversations are loaded here -->
                 <div class="direct-chat-messages">
-                  <!-- Message. Default to the left -->
-                  <div class="direct-chat-msg">
-                    <!-- /.direct-chat-info -->
-                    <!-- /.direct-chat-img -->
-                    <div class="direct-chat-text">
-                      Is this template really for free? That's unbelievable!
-                    </div><!-- /.direct-chat-text -->
-                  </div><!-- /.direct-chat-msg -->
-
-                  <!-- Message to the right -->
-                  <div class="direct-chat-msg right">
-                    <!-- /.direct-chat-info -->
-                    <!-- /.direct-chat-img -->
-                    <div class="direct-chat-text">
-                      You better believe it!
-                    </div><!-- /.direct-chat-text -->
-                  </div><!-- /.direct-chat-msg -->
                 </div><!--/.direct-chat-messages-->
 
               </div><!-- /.box-body -->
@@ -273,6 +256,13 @@
 	    </a>
 	  </li>
   </script>
+  <script id = "chattrChatTpl" type="text/x-handlebars-template">
+  	<div class="direct-chat-msg {{cls}}">
+      <div class="direct-chat-text">
+      	{{message}}
+      </div><!-- /.direct-chat-text -->
+    </div>
+  </script>
   <% include _vendor %>
 	<script src="//static.opentok.com/v2.2/js/opentok.min.js"></script>
 	<script src="//cdn.webrtc-experiment.com/DataChannel.js"></script>
@@ -346,43 +336,7 @@
 	  $(".controlOption").click(function(){
 	    $(this).toggleClass("selected");
 	  });
-	  // ***
-	  // *** Reactive jsQuery Bindings for the Reactive Extensions for Javascript
-	  // ***
-	  var throttledInput = $('#chat_message')
-	  		.keyupAsObservable()
-	  		.map(function(e){
-	  			console.log(e.target);
-	  			return $(e.target).val();
-	  		})
-	  		.throttle(500)
-	  		.distinctUntilChanged();
-		var suggestions = throttledInput.flatMapLatest( function (text) {
-		        return searchWikipedia(text);
-		});
-		var subscription = suggestions.subscribe( 
-		    function (data) {
-		        $.each(data[1], function (_, text) {
-		        	console.log(text);
-		        });
-		    }, 
-		    function (e) {
-		    	console.log(e);
-		    }
-		);
 
-
-		function searchWikipedia(term) {
-		    return $.ajaxAsObservable({
-	        url: "https://en.wikipedia.org/w/api.php",
-	        data: {
-        		action: 'opensearch',
-            search: term,
-            format: 'json'
-        	},
-	        dataType: 'json'
-		    });
-		}
 	</script>
 </body>
 </html>
