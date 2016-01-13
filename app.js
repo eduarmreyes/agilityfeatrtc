@@ -110,8 +110,8 @@ actor1.connect(bus);
 actor2.connect(bus);
  
 // actor1 listens for messages containing 'hi' or 'hello' (case insensitive) 
-actor1.on(/:rid/i, function (from, message) {
-  console.log(from + ' is entering to room: ' + message);
+actor1.on(/hi|hello/i, function (from, message) {
+  console.log(from + ' said: ' + message);
  
   // reply to the greeting 
   this.send(from, 'Hi ' + from + ', nice to meet you!');
