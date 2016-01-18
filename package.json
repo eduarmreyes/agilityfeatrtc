@@ -1,22 +1,24 @@
 {
-	"name": "AgilityFeatRTC",
-	"version": "0.0.1",
-	"main": "app.js",
-	"license": "MIT",
-	"scripts": {
-		"start": "node app.js",
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"dependencies": {
-		"express": "^4.0.0",
-		"body-parser": "*",
-		"opentok": "^2.2",
-		"ejs": "^1.0.0",
-		"redis": ">=0.10.1",
-		"cors": "^2.2.0",
-		"rx": "^4.0.7"
-	},
-	"engines": {
-		"node": ">= 0.12.0"
-	}
+  "name": "AgilityFeatRTC",
+  "version": "0.0.1",
+  "main": "app.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "babble": "^0.10.0",
+    "body-parser": "*",
+    "cors": "^2.2.0",
+    "ejs": "^1.0.0",
+    "express": "^4.0.0",
+    "opentok": "^2.2",
+    "redis": ">=0.10.1",
+    "rx": "^4.0.7",
+    "socket.io": "^1.4.4"
+  },
+  "engines": {
+    "node": ">= 0.12.0"
+  }
 }

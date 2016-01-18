@@ -172,6 +172,8 @@ OpenTokChattr.prototype = {
   },
   setName:function(name){
     _this.users[_this.session.connection.connectionId]=name;
+    console.log(name.substring( name.length - 8, name.length));
+    socket.emit("actor", name.substring( name.length - 8, name.length));
   },
   //iterate through messages in printMessages
   printMessages: function(){
@@ -278,6 +280,10 @@ OpenTokChattr.prototype = {
     var date = new Date();
     var data = {name: _this.getNickname(_this.session.connection.connectionId), text: encodeURI(msg), date: date, from: _this.session.connection.connectionId};
     _this.sendSignal("chat", data);
+    _this.sendChatToSocket(msg, data);
+  },
+  sendChatToSocket: function(msg, data) {
+    socket.emit("chat message", msg, data);
   },
   sendGeneralUpdate: function(msg){
     _this.sendSignal("generalUpdate", {"text": msg});
@@ -366,18 +372,6 @@ OpenTokChattr.prototype = {
         return "Just now";
         break;
     }
-    /*if(seconds>=60 && seconds<120)
-      return "1 minute ago";
-    else if(seconds>=120 && seconds<3600)
-      return parseInt(seconds/60,10)+" minutes ago";
-    else if(seconds>=3600 && seconds<7200)
-      return "1 hour ago";
-    else if (seconds>=7200)
-      return parseInt(seconds/3600,10)+" hours ago";
-    else if (seconds>=10)
-      return parseInt(seconds/60,10)+" seconds ago";
-    else
-      return "Just now";*/
   },
   _defaultNickname: function(connectionId){
     return "AgilityFeat Guest-"+connectionId.substring( connectionId.length - 8, connectionId.length )

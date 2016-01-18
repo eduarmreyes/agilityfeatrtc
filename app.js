@@ -8,8 +8,23 @@ var express			 	= require("express"),
 	actors 					= require("simple-actors"),
 	config 					= require("./config"),
 	storage 				= require("./lib/store.js"),
-	loadMiddleware	= require("./lib/load-middleware.js");
+	loadMiddleware	= require("./lib/load-middleware.js"),
+	// ***
+	// *** Add Actors to the backend logic
+	// ***
+	actor					 	= {},
+	bus							= new actors.DistribusMessageBus(),
+	sActor					= "",
+	receiver				= new actors.Actor('receiver');
 
+	receiver.connect(bus);
+
+	// receiver listens for any message 
+	receiver.on(/./, function (from, message) {
+	  console.log(from + ' said: ' + message);
+		io.emit("chat message", message);
+	});
+	 
 // ***
 // *** OpenTok Constants for creating Session and Token values
 // ***
@@ -100,34 +115,42 @@ app.get("/:rid", function(req, res) {
 });
 
 // ***
-// *** Add Actors to the backend logic
-// ***
-var bus			= new actors.DistribusMessageBus(),
-    actor1	= new actors.Actor('actor1'),
-    actor2	= new actors.Actor('actor2');
- 
-actor1.connect(bus);
-actor2.connect(bus);
- 
-// actor1 listens for messages containing 'hi' or 'hello' (case insensitive) 
-actor1.on(/hi|hello/i, function (from, message) {
-  console.log(from + ' said: ' + message);
- 
-  // reply to the greeting 
-  this.send(from, 'Hi ' + from + ', nice to meet you!');
-});
- 
-// actor2 listens for any message 
-actor2.on(/./, function (from, message) {
-  console.log(from + ' said: ' + message);
-});
- 
-// send a message to actor 1 
-actor2.send('actor1', 'Hello actor1!');
-
-// ***
 // *** start server, listen to port (predefined or 9393)
 // ***
-app.listen(config.web.port, function() {
+var server = app.listen(config.web.port, function() {
 	console.log("application now served on port " + config.web.port + " in " + config.web.env + " environment");
+});
+
+// ***
+// *** Add socket.io for actors chat
+// ***
+var io						= require("socket.io")(server, {log: false});
+
+io.on("connection", function(socket) {
+	/*socket.on('disconnect', function(){
+	});*/
+	socket.on("chat message", function(msg, data) {
+		actor.send("receiver", msg);
+	});
+	// ***
+	// *** Socket on actor create
+	// ***
+	socket.on("actor", function(sNickname) {
+		// ***
+		// *** Add Actors to the backend logic
+		// ***
+		try {
+			console.log(sNickname);
+			actor		= new actors.Actor(sNickname),
+			sActor	= sNickname;
+			actor.connect(bus);
+			// actor listens for messages containing 'hi' or 'hello' (case insensitive) 
+			actor.on(/hi|hello/i, function (from, message) {
+			  // reply to the greeting 
+			  this.send(from, 'Hi ' + from + ', nice to meet you!');
+			});
+		} catch(e) {
+			console.log(e);
+		}
+	});
 });
