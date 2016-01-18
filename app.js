@@ -15,15 +15,25 @@ var express			 	= require("express"),
 	actor					 	= {},
 	bus							= new actors.DistribusMessageBus(),
 	sActor					= "",
-	receiver				= new actors.Actor('receiver');
+	receiver				= new actors.Actor('receiver'),
+	aConnectedActors = [];
 
-	receiver.connect(bus);
+receiver.connect(bus);
 
-	// receiver listens for any message 
-	receiver.on(/./, function (from, message) {
-	  console.log(from + ' said: ' + message);
-		io.emit("chat message", message);
-	});
+// receiver listens for any message 
+receiver.on(/./, function (from, message) {
+  console.log(from + ' said: ' + message);
+	io.emit("chat message", message);
+});
+// actor listens for messages containing 'hi' or 'hello' (case insensitive) 
+receiver.on(/hi|hello/i, function (from, message) {
+	io.emit("chat message from receiver", 'Hi friend, nice to meet you!');
+  // reply to the greeting 
+  this.send(from, 'Hi ' + from + ', nice to meet you!');
+});
+receiver.on(/list/i, function() {
+	io.emit("list", "You'll see the list of users");
+});
 	 
 // ***
 // *** OpenTok Constants for creating Session and Token values
@@ -144,11 +154,7 @@ io.on("connection", function(socket) {
 			actor		= new actors.Actor(sNickname),
 			sActor	= sNickname;
 			actor.connect(bus);
-			// actor listens for messages containing 'hi' or 'hello' (case insensitive) 
-			actor.on(/hi|hello/i, function (from, message) {
-			  // reply to the greeting 
-			  this.send(from, 'Hi ' + from + ', nice to meet you!');
-			});
+			aConnectedActors[sNickname] = sNickname;
 		} catch(e) {
 			console.log(e);
 		}

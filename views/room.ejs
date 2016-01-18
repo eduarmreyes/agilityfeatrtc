@@ -106,7 +106,7 @@
             <div class="box box-success direct-chat direct-chat-success">
               <div class="box-header with-border">
                 <h3 class="box-title">Chat</h3>
-                <p class="help-block">Chat made with Reactive Extensions and Actors Design Pattern</p>
+                <p class="help-block">Send "hi" or "hello" and our bot will kindly reply back to you.</p>
                 <div class="box-tools pull-right">
                   <span data-toggle="tooltip" title="0 Messages" class="badge bg-green">0</span>
                 </div>
@@ -126,6 +126,7 @@
                     </span>
                   </div>
                 </form>
+                <p class="help-block">Chat made with Reactive Extensions and Actors Design Pattern</p>
               </div><!-- /.box-footer-->
             </div>
           </div><!-- /.col -->
@@ -263,6 +264,15 @@
       </div><!-- /.direct-chat-text -->
     </div>
   </script>
+  <script id="chattrUserListTpl" type="text/x-handlebars-template">
+	  {{#users}}
+	  	<div class="direct-chat-msg">
+	      <div class="direct-chat-text">
+	      	- {{name}}
+	      </div><!-- /.direct-chat-text -->
+	    </div>
+	  {{/users}}
+  </script>
   <% include _vendor %>
 	<script src="//static.opentok.com/v2.2/js/opentok.min.js"></script>
 	<script src="//cdn.webrtc-experiment.com/DataChannel.js"></script>
@@ -275,11 +285,28 @@
 	<script src="/js/room.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var socket = io(),
-				iMsgCounter = 0;
+				iMsgCounter = 0,
+				tmplData = {};
 		socket.on("chat message", function(msg, data) {
-			iMsgCounter++;
-			$(".box-tools>.badge").text(iMsgCounter);
-			$(".box-tools>.badge").attr("title", iMsgCounter + " Messages");
+			fnAddMessageCounter();
+		});
+		socket.on("chat message from receiver", function(msg){
+			tmplData.message=msg;
+			tmplData.cls = "";
+			var tpl = Handlebars.compile($('#chattrChatTpl').html());
+			$(".direct-chat-messages").append(tpl(tmplData));
+			fnAddMessageCounter();
+		});
+		socket.on("list", function(msg) {
+			var aUsers = chattr.users.map(function() {
+				console.log(this);
+				return "<p>-" + this + " </p>";
+			});
+			tmplData.message=aUsers;
+			tmplData.cls = "";
+			var tpl = Handlebars.compile($('#chattrChatTpl').html());
+			$(".direct-chat-messages").append(tpl(tmplData));
+
 		});
 		/// ***
 	  var session = OT.initSession( "<%= apiKey %>", "<%= sid %>" );
@@ -294,6 +321,7 @@
 	    $("#chatButton").removeClass("selected");
 	  }
 	 });
+	  console.log(chattr);
 	  room = new Room("<%= rid %>", session, "<%= token %>", chattr);
 	  dataChannel = new DataChannel("<%= rid %>");
     var arrayToStoreChunks = [];
@@ -344,7 +372,11 @@
 	  $(".controlOption").click(function(){
 	    $(this).toggleClass("selected");
 	  });
-
+	  function fnAddMessageCounter () {
+	  	iMsgCounter++;
+	  	$(".box-tools>.badge").text(iMsgCounter);
+	  	$(".box-tools>.badge").attr("title", iMsgCounter + " Messages");
+	  }
 	</script>
 </body>
 </html>

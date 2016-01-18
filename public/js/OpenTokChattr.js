@@ -61,7 +61,7 @@ OpenTokChattr.prototype = {
     _this.templates.newUser = $('#chattrNewUserTpl').html();
     _this.templates.userLeave = $('#chattrUserLeaveTpl').html();
     // _this.templates.update = $('#chattrUpdateTpl').html();
-    // _this.templates.userList = $('#chattrUserListTpl').html();
+    _this.templates.userList = $('#chattrUserListTpl').html();
     // _this.templates.help = $('#chattrHelpTpl').html();
     // _this.templates.nameExists = $('#chattrNameExistsTpl').html();
     // _this.templates.focus = $('#chattrFocusTpl').html();
@@ -262,6 +262,10 @@ OpenTokChattr.prototype = {
       case "/list":
         _this.sendListSignal();
         break;
+      case "list":
+        _this.sendListSignal();
+        _this.sendChat(text);
+        break;
       case "/focus":
         _this.sendFocusSignal();
         break;
@@ -319,8 +323,8 @@ OpenTokChattr.prototype = {
         userData.last = "last";
       data.users.push(userData);
     }
-    // var tpl = Handlebars.compile(_this.templates.userList);
-    // _this.sendSelfUpdate(tpl(data));
+    var tpl = Handlebars.compile(_this.templates.userList);
+    _this.sendSelfUpdate(tpl(data));
   },
   sendFocusSignal: function() {
     if (_this.initialized && room.initialized && room.myStream) {
