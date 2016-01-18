@@ -108,7 +108,7 @@
                 <h3 class="box-title">Chat</h3>
                 <p class="help-block">Chat made with Reactive Extensions and Actors Design Pattern</p>
                 <div class="box-tools pull-right">
-                  <span data-toggle="tooltip" title="3 Messages" class="badge bg-green">3</span>
+                  <span data-toggle="tooltip" title="0 Messages" class="badge bg-green">0</span>
                 </div>
               </div><!-- /.box-header -->
               <div class="box-body">
@@ -274,9 +274,13 @@
 	<script src="/js/OpenTokChattr.js" type="text/javascript"></script>
 	<script src="/js/room.js" type="text/javascript"></script>
 	<script type="text/javascript">
-		var socket = io();
-		/// ***
-		/// *** OpenTok initSession
+		var socket = io(),
+				iMsgCounter = 0;
+		socket.on("chat message", function(msg, data) {
+			iMsgCounter++;
+			$(".box-tools>.badge").text(iMsgCounter);
+			$(".box-tools>.badge").attr("title", iMsgCounter + " Messages");
+		});
 		/// ***
 	  var session = OT.initSession( "<%= apiKey %>", "<%= sid %>" );
 	  chattr = new OpenTokChattr("body","<%= rid %>",session,
