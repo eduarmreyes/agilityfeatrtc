@@ -107,6 +107,7 @@
               <div class="box-header with-border">
                 <h3 class="box-title">Chat</h3>
                 <p class="help-block">Send "hi" or "hello" and our bot will kindly reply back to you.</p>
+                <p class="help-block">Send "list" our bot will let you know how many users are online.</p>
                 <div class="box-tools pull-right">
                   <span data-toggle="tooltip" title="0 Messages" class="badge bg-green">0</span>
                 </div>
@@ -298,11 +299,9 @@
 			fnAddMessageCounter();
 		});
 		socket.on("list", function(msg) {
-			var aUsers = chattr.users.map(function() {
-				console.log(this);
-				return "<p>-" + this + " </p>";
-			});
-			tmplData.message=aUsers;
+			var iUsers = (Object.keys(chattr.users).length > 1) ? Object.keys(chattr.users).length + " users" : Object.keys(chattr.users).length + " user",
+				sUsers = "We have " + iUsers + " online";
+			tmplData.message=sUsers;
 			tmplData.cls = "";
 			var tpl = Handlebars.compile($('#chattrChatTpl').html());
 			$(".direct-chat-messages").append(tpl(tmplData));
